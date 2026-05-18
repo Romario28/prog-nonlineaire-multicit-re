@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PNL — Optimisation ADOMC · Choix d'un ordinateur</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+:root {
+  --bg: #f7f6f3;
+  --surface: #ffffff;
+  --surface2: #f2f1ee;
+  --border: #e4e2dc;
+  --border2: #d0cec7;
+  --text: #1a1917;
+  --muted: #7a7670;
+  --accent: #2d6a4f;
+  --accent2: #1b4332;
+  --amber: #b45309;
+  --red: #c0392b;
+  --blue: #1d4ed8;
+  --green: #166534;
+  --teal: #0f766e;
+  --font: 'DM Sans', sans-serif;
+  --serif: 'Fraunces', serif;
+  --mono: 'DM Mono', monospace;
+  --radius: 10px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.07), 0 4px 12px rgba(0,0,0,0.05);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 14px; }
+body { background: var(--bg); color: var(--text); font-family: var(--font); line-height: 1.5; min-height: 100vh; }
+
+/* HEADER */
+.header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.header-left { display: flex; align-items: center; gap: 14px; }
+.header-badge {
+  background: var(--accent);
+  color: #fff;
+  font-size: 10px;
+  font-family: var(--mono);
+  font-weight: 500;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 4px;
+}
+.header h1 { font-family: var(--serif); font-size: 18px; font-weight: 600; color: var(--text); }
+.header-sub { font-size: 12px; color: var(--muted); font-family: var(--mono); }
+
+/* LAYOUT */
+.main { display: grid; grid-template-columns: 320px 1fr; gap: 0; height: calc(100vh - 57px); overflow: hidden; }
+.left-panel { background: var(--surface); border-right: 1px solid var(--border); overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 18px; }
+.right-panel { background: var(--bg); overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+
+/* SECTION TITLES */
+.sec-label {
+  font-size: 10px;
+  font-family: var(--mono);
+  color: var(--muted);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.sec-label::after { content:''; flex:1; height:1px; background:var(--border); }
+
+/* PROFILE BUTTONS */
+.profile-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+.pbtn {
+  background: var(--surface2);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 6px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.pbtn:hover { border-color: var(--accent); }
+.pbtn.active { background: var(--accent); border-color: var(--accent); }
+.pbtn i { font-size: 18px; color: var(--muted); display: block; margin-bottom: 4px; }
+.pbtn.active i { color: #fff; }
+.pbtn-name { font-size: 11px; font-weight: 600; color: var(--text); }
+.pbtn.active .pbtn-name { color: #fff; }
+
+/* CONFIG CARDS */
+.config-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.cfg-card {
+  border-radius: 8px;
+  padding: 10px 11px;
+  border: 1px solid;
+}
+.cfg-card.min { background: #f0fdf4; border-color: #bbf7d0; }
+.cfg-card.reco { background: #eff6ff; border-color: #bfdbfe; }
+.cfg-title {
+  font-size: 9px;
+  font-family: var(--mono);
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 7px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.cfg-card.min .cfg-title { color: var(--green); }
+.cfg-card.reco .cfg-title { color: var(--blue); }
+.cfg-row { display: flex; justify-content: space-between; margin-bottom: 3px; }
+.cfg-key { font-size: 10px; color: var(--muted); }
+.cfg-val { font-size: 10px; font-family: var(--mono); font-weight: 500; color: var(--text); }
+.cfg-note { font-size: 9px; color: var(--muted); margin-top: 5px; padding-top: 5px; border-top: 1px solid rgba(0,0,0,0.06); }
+
+/* SLIDERS */
+.sl-block { margin-bottom: 12px; }
+.sl-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 3px; }
+.sl-name { font-size: 12px; font-weight: 500; color: var(--text); }
+.sl-name .pill {
+  display: inline-block;
+  font-size: 9px;
+  font-family: var(--mono);
+  padding: 1px 7px;
+  border-radius: 20px;
+  margin-left: 5px;
+  vertical-align: middle;
+}
+.pill-nvme { background: #dbeafe; color: var(--blue); }
+.pill-ssd  { background: #dcfce7; color: var(--green); }
+.pill-emmc { background: #fef9c3; color: #854d0e; }
+.pill-hdd  { background: #fee2e2; color: var(--red); }
+.sl-val { font-size: 12px; font-family: var(--mono); font-weight: 500; color: var(--accent); }
+.sl-formula { font-size: 10px; font-family: var(--mono); color: var(--muted); margin-bottom: 5px; }
+input[type=range] {
+  width: 100%;
+  height: 4px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: var(--border2);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+  cursor: pointer;
+}
+
+/* BATTERY */
+.bat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.bbtn {
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px;
+  cursor: pointer;
+  background: var(--surface2);
+  transition: all 0.15s;
+  display: flex; align-items: center; gap: 8px;
+}
+.bbtn:hover { border-color: var(--blue); }
+.bbtn.active { background: #eff6ff; border-color: #3b82f6; }
+.bbtn i { font-size: 18px; color: var(--muted); }
+.bbtn.active i { color: var(--blue); }
+.bbtn-text { }
+.bbtn-name { font-size: 11px; font-weight: 600; color: var(--text); }
+.bbtn-sub { font-size: 10px; color: var(--muted); }
+
+/* SCORES */
+.score-list { display: flex; flex-direction: column; gap: 8px; }
+.score-item { }
+.score-top { display: flex; justify-content: space-between; margin-bottom: 4px; }
+.score-lbl { font-size: 11px; color: var(--muted); display: flex; align-items: center; gap: 5px; }
+.score-lbl i { font-size: 13px; }
+.score-num { font-size: 11px; font-family: var(--mono); font-weight: 500; color: var(--text); }
+.score-track { background: var(--surface2); border-radius: 3px; height: 6px; overflow: hidden; border: 1px solid var(--border); }
+.score-fill { height: 100%; border-radius: 3px; transition: width 0.5s cubic-bezier(0.4,0,0.2,1); }
+
+/* ALERT */
+.alert-box {
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 11px;
+  font-family: var(--mono);
+  border-left: 3px solid;
+  line-height: 1.6;
+  transition: all 0.3s;
+}
+.alert-ok   { background: #f0fdf4; border-color: #22c55e; color: #166534; }
+.alert-warn { background: #fffbeb; border-color: #f59e0b; color: #92400e; }
+.alert-bad  { background: #fef2f2; border-color: #ef4444; color: #991b1b; }
+
+/* RIGHT PANEL CARDS */
+.r-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: var(--shadow);
+}
+.r-card-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 2px; display: flex; align-items: center; gap: 6px; }
+.r-card-title i { font-size: 16px; color: var(--muted); }
+.r-card-sub { font-size: 11px; font-family: var(--mono); color: var(--muted); margin-bottom: 12px; }
+.chart-wrap { position: relative; }
+
+/* LEGEND */
+.legend { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 10px; }
+.leg-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--muted); }
+.leg-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.leg-tri { width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-bottom: 10px solid; flex-shrink: 0; }
+.leg-star { font-size: 12px; line-height: 1; }
+.leg-dia { width: 10px; height: 10px; transform: rotate(45deg); flex-shrink: 0; }
+
+/* MINI CHARTS ROW */
+.mini-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.mini-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px;
+  box-shadow: var(--shadow);
+}
+.mini-title { font-size: 11px; font-weight: 600; color: var(--text); margin-bottom: 1px; }
+.mini-formula { font-size: 10px; font-family: var(--mono); color: var(--muted); margin-bottom: 8px; }
+.mini-wrap { position: relative; height: 90px; }
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-left">
+    <span class="header-badge">PNL · ADOMC</span>
+    <div>
+      <h1>Optimisation du choix d'un ordinateur</h1>
+    </div>
+  </div>
+  <div class="header-sub">3 critères &nbsp;·&nbsp; 3 variables &nbsp;·&nbsp; Front de Pareto dynamique</div>
+</header>
+
+<div class="main">
+
+  <!-- LEFT PANEL -->
+  <aside class="left-panel">
+
+    <!-- Profil -->
+    <div>
+      <div class="sec-label"><i class="ti ti-adjustments-horizontal"></i> Profil d'usage</div>
+      <div class="profile-grid">
+        <div class="pbtn active" id="pb-bur" onclick="setProfile('bureautique',this)">
+          <i class="ti ti-briefcase"></i>
+          <span class="pbtn-name">Bureautique</span>
+        </div>
+        <div class="pbtn" id="pb-gam" onclick="setProfile('gaming',this)">
+          <i class="ti ti-device-gamepad-2"></i>
+          <span class="pbtn-name">Gaming</span>
+        </div>
+        <div class="pbtn" id="pb-dev" onclick="setProfile('dev',this)">
+          <i class="ti ti-code"></i>
+          <span class="pbtn-name">Développeur</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Config min / reco -->
+    <div>
+      <div class="sec-label"><i class="ti ti-list-check"></i> Configurations de référence</div>
+      <div class="config-cards" id="config-cards"></div>
+    </div>
+
+    <!-- Sliders -->
+    <div>
+      <div class="sec-label"><i class="ti ti-sliders"></i> Variables de décision</div>
+
+      <div class="sl-block">
+        <div class="sl-head">
+          <span class="sl-name"><i class="ti ti-cpu" style="font-size:13px;vertical-align:-2px;margin-right:3px;"></i>Processeur x₁</span>
+          <span class="sl-val" id="v-cpu">2.0 GHz</span>
+        </div>
+        <div class="sl-formula">P = ln(x₁ + x₂/4)</div>
+        <input type="range" min="1" max="5" step="0.5" value="2" id="sl-cpu" oninput="onSlide()">
+      </div>
+
+      <div class="sl-block">
+        <div class="sl-head">
+          <span class="sl-name"><i class="ti ti-server" style="font-size:13px;vertical-align:-2px;margin-right:3px;"></i>RAM x₂</span>
+          <span class="sl-val" id="v-ram">16 Go</span>
+        </div>
+        <div class="sl-formula">A = k / (x₁ · x₂)</div>
+        <input type="range" min="4" max="128" step="4" value="16" id="sl-ram" oninput="onSlide()">
+      </div>
+
+      <div class="sl-block">
+        <div class="sl-head">
+          <span class="sl-name">
+            <i class="ti ti-database" style="font-size:13px;vertical-align:-2px;margin-right:3px;"></i>Stockage x₃
+            <span class="pill pill-ssd" id="disk-pill">SSD</span>
+          </span>
+          <span class="sl-val" id="v-disk">256 Go</span>
+        </div>
+        <div class="sl-formula">C ∝ e^(x₂/20) + x₃·δ</div>
+        <input type="range" min="128" max="4000" step="128" value="256" id="sl-disk" oninput="onSlide()">
+      </div>
+    </div>
+
+    <!-- Batterie -->
+    <div>
+      <div class="sec-label"><i class="ti ti-battery"></i> Importance de la batterie</div>
+      <div class="bat-grid">
+        <div class="bbtn active" onclick="setBat('nomade',this)">
+          <i class="ti ti-world"></i>
+          <div class="bbtn-text">
+            <div class="bbtn-name">Nomade</div>
+            <div class="bbtn-sub">autonomie prioritaire</div>
+          </div>
+        </div>
+        <div class="bbtn" onclick="setBat('bureau',this)">
+          <i class="ti ti-device-desktop"></i>
+          <div class="bbtn-text">
+            <div class="bbtn-name">Bureau fixe</div>
+            <div class="bbtn-sub">branché en permanence</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scores -->
+    <div>
+      <div class="sec-label"><i class="ti ti-chart-bar"></i> Scores PNL calculés</div>
+      <div class="score-list">
+        <div class="score-item">
+          <div class="score-top">
+            <span class="score-lbl"><i class="ti ti-bolt" style="color:#1d4ed8"></i> Puissance P</span>
+            <span class="score-num" id="num-p">—</span>
+          </div>
+          <div class="score-track"><div class="score-fill" id="bar-p" style="background:#1d4ed8;width:0%"></div></div>
+        </div>
+        <div class="score-item">
+          <div class="score-top">
+            <span class="score-lbl"><i class="ti ti-battery-charging" style="color:#0f766e"></i> Autonomie A</span>
+            <span class="score-num" id="num-a">—</span>
+          </div>
+          <div class="score-track"><div class="score-fill" id="bar-a" style="background:#0f766e;width:0%"></div></div>
+        </div>
+        <div class="score-item">
+          <div class="score-top">
+            <span class="score-lbl"><i class="ti ti-coin" style="color:#b45309"></i> Coût C</span>
+            <span class="score-num" id="num-c">—</span>
+          </div>
+          <div class="score-track"><div class="score-fill" id="bar-c" style="background:#b45309;width:0%"></div></div>
+        </div>
+        <div class="score-item">
+          <div class="score-top">
+            <span class="score-lbl"><i class="ti ti-stars" style="color:#7c3aed"></i> Satisfaction</span>
+            <span class="score-num" id="num-s">—</span>
+          </div>
+          <div class="score-track"><div class="score-fill" id="bar-s" style="background:#7c3aed;width:0%"></div></div>
+        </div>
+      </div>
+      <div class="alert-box alert-ok" id="alert-box" style="margin-top:12px;">
+        Prêt — sélectionnez un profil et ajustez les curseurs.
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- RIGHT PANEL -->
+  <main class="right-panel">
+
+    <!-- Pareto -->
+    <div class="r-card">
+      <div class="r-card-title"><i class="ti ti-chart-scatter"></i> Front de Pareto — Prix vs Satisfaction globale</div>
+      <div class="r-card-sub">Chaque point représente un appareil réel positionné par le modèle PNL</div>
+      <div class="legend">
+        <span class="leg-item"><span class="leg-dot" style="background:#6b7280"></span>Appareils du marché</span>
+        <span class="leg-item"><span style="font-size:14px;color:#166534;line-height:1;">▲</span>&nbsp;Config minimale</span>
+        <span class="leg-item"><span style="font-size:14px;color:#1d4ed8;line-height:1;">★</span>&nbsp;Config recommandée</span>
+        <span class="leg-item"><span class="leg-dia" style="background:#b45309"></span>&nbsp;Votre configuration</span>
+      </div>
+      <div class="chart-wrap" style="height:280px;"><canvas id="cPareto" role="img" aria-label="Front de Pareto prix satisfaction"></canvas></div>
+    </div>
+
+    <!-- 3 mini courbes -->
+    <div class="mini-row">
+      <div class="mini-card">
+        <div class="mini-title">Coût exponentiel</div>
+        <div class="mini-formula">C ∝ e^(x₂/20) — RAM en Go</div>
+        <div class="mini-wrap"><canvas id="cExp" role="img" aria-label="Courbe coût exponentiel"></canvas></div>
+      </div>
+      <div class="mini-card">
+        <div class="mini-title">Autonomie multiplicative</div>
+        <div class="mini-formula">A = k / (x₁ · x₂) — interaction non linéaire</div>
+        <div class="mini-wrap"><canvas id="cMul" role="img" aria-label="Courbe autonomie"></canvas></div>
+      </div>
+      <div class="mini-card">
+        <div class="mini-title">Satisfaction logarithmique</div>
+        <div class="mini-formula">P = ln(x₁ + x₂/4) — rendements décroissants</div>
+        <div class="mini-wrap"><canvas id="cLog" role="img" aria-label="Courbe satisfaction"></canvas></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+const PROFILES = {
+  bureautique: {
+    cpu:2, ram:16, disk:256, wP:0.25, wA:0.45, wC:0.30,
+    min:  {cpu:1.5, ram:8,  disk:128, diskType:'eMMC',    label:'Celeron / Pentium',   note:'Navigation, emails, Office'},
+    reco: {cpu:2.5, ram:16, disk:256, diskType:'SSD',     label:'Intel i5 / Ryzen 5',  note:'Confort quotidien optimal'},
+  },
+  gaming: {
+    cpu:4.5, ram:32, disk:1000, wP:0.65, wA:0.10, wC:0.25,
+    min:  {cpu:3.5, ram:16, disk:512,  diskType:'SSD',     label:'Intel i7 / Ryzen 7',  note:'Jeux récents en 1080p'},
+    reco: {cpu:4.5, ram:32, disk:1000, diskType:'SSD NVMe',label:'Intel i9 / Ryzen 9',  note:'4K, streaming + jeu'},
+  },
+  dev: {
+    cpu:3.5, ram:64, disk:512, wP:0.50, wA:0.25, wC:0.25,
+    min:  {cpu:2.5, ram:16, disk:256,  diskType:'SSD',     label:'Apple M2 / Ryzen 7',  note:'Dev web, scripts légers'},
+    reco: {cpu:4.0, ram:64, disk:512,  diskType:'SSD NVMe',label:'Apple M3 / Ryzen 9',  note:'Docker, ML, multi-projets'},
+  },
+};
+
+const DEVICES = [
+  {name:'Chromebook',      cpu:1.8, ram:4,  disk:64,   prix:350},
+  {name:'MacBook Air M2',  cpu:3.2, ram:16, disk:256,  prix:1299},
+  {name:'Dell XPS 13',     cpu:3.5, ram:16, disk:512,  prix:1499},
+  {name:'MacBook Pro M3',  cpu:4.5, ram:32, disk:512,  prix:2299},
+  {name:'ASUS ROG',        cpu:4.8, ram:32, disk:1000, prix:1999},
+  {name:'ThinkPad X1',     cpu:3.0, ram:16, disk:512,  prix:1799},
+  {name:'iPhone 15 Pro',   cpu:3.8, ram:8,  disk:256,  prix:1229},
+  {name:'Samsung S24 Ultra',cpu:3.6,ram:12, disk:256,  prix:1399},
+  {name:'Config Extrême',  cpu:5.0, ram:128,disk:2000, prix:4500},
+];
+
+let profile = 'bureautique', batMode = 'nomade';
+let chartPareto = null, chartExp = null, chartMul = null, chartLog = null;
+
+function diskLabel(gb){ return gb >= 1000 ? (gb/1000).toFixed(gb%1000===0?0:1)+'To' : gb+'Go'; }
+function diskType(cpu, ram, disk){
+  if(disk >= 512 && cpu >= 3.5) return 'SSD NVMe';
+  if(disk >= 128 && cpu >= 2)   return 'SSD';
+  if(cpu < 2)                   return 'eMMC';
+  return 'HDD';
+}
+function pillClass(t){ return t==='SSD NVMe'?'pill-nvme':t==='SSD'?'pill-ssd':t==='eMMC'?'pill-emmc':'pill-hdd'; }
+
+function calcP(cpu,ram){ return Math.log(cpu + ram/4); }
+function calcA(cpu,ram,bat){ const b = 1/(cpu*(ram/8))*12; return bat==='nomade'?b*1.4:b*0.8; }
+function calcC(cpu,ram,disk){ return Math.exp(ram/20)*200 + cpu*180 + disk*0.8; }
+function calcSat(cpu,ram,disk,bat,wP,wA,wC){
+  const p=calcP(cpu,ram), a=calcA(cpu,ram,bat), c=calcC(cpu,ram,disk);
+  const pN=Math.min(p/3,1), aN=Math.min(a/3,1), cN=Math.max(1-c/5000,0);
+  return wP*pN + wA*aN + wC*cN;
+}
+
+function renderConfigs(p){
+  const pr = PROFILES[p];
+  document.getElementById('config-cards').innerHTML = `
+    <div class="cfg-card min">
+      <div class="cfg-title"><i class="ti ti-circle-check" style="font-size:12px"></i> Minimale</div>
+      <div class="cfg-row"><span class="cfg-key">CPU</span><span class="cfg-val">${pr.min.cpu} GHz</span></div>
+      <div class="cfg-row"><span class="cfg-key">RAM</span><span class="cfg-val">${pr.min.ram} Go</span></div>
+      <div class="cfg-row"><span class="cfg-key">Disque</span><span class="cfg-val">${diskLabel(pr.min.disk)} ${pr.min.diskType}</span></div>
+      <div class="cfg-row"><span class="cfg-key">Modèle</span><span class="cfg-val" style="font-size:9px">${pr.min.label}</span></div>
+      <div class="cfg-note">${pr.min.note}</div>
+    </div>
+    <div class="cfg-card reco">
+      <div class="cfg-title"><i class="ti ti-star" style="font-size:12px"></i> Recommandée</div>
+      <div class="cfg-row"><span class="cfg-key">CPU</span><span class="cfg-val">${pr.reco.cpu} GHz</span></div>
+      <div class="cfg-row"><span class="cfg-key">RAM</span><span class="cfg-val">${pr.reco.ram} Go</span></div>
+      <div class="cfg-row"><span class="cfg-key">Disque</span><span class="cfg-val">${diskLabel(pr.reco.disk)} ${pr.reco.diskType}</span></div>
+      <div class="cfg-row"><span class="cfg-key">Modèle</span><span class="cfg-val" style="font-size:9px">${pr.reco.label}</span></div>
+      <div class="cfg-note">${pr.reco.note}</div>
+    </div>`;
+}
+
+function setProfile(p, btn){
+  document.querySelectorAll('.pbtn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  profile = p;
+  const pr = PROFILES[p];
+  document.getElementById('sl-cpu').value  = pr.reco.cpu;
+  document.getElementById('sl-ram').value  = pr.reco.ram;
+  document.getElementById('sl-disk').value = pr.reco.disk;
+  renderConfigs(p);
+  onSlide();
+}
+
+function setBat(b, btn){
+  document.querySelectorAll('.bbtn').forEach(x=>x.classList.remove('active'));
+  btn.classList.add('active');
+  batMode = b;
+  onSlide();
+}
+
+function onSlide(){
+  const cpu  = parseFloat(document.getElementById('sl-cpu').value);
+  const ram  = parseFloat(document.getElementById('sl-ram').value);
+  const disk = parseFloat(document.getElementById('sl-disk').value);
+
+  document.getElementById('v-cpu').textContent  = cpu.toFixed(1)+' GHz';
+  document.getElementById('v-ram').textContent  = ram+' Go';
+  document.getElementById('v-disk').textContent = diskLabel(disk);
+
+  const dtype = diskType(cpu,ram,disk);
+  const pill = document.getElementById('disk-pill');
+  pill.textContent = dtype;
+  pill.className = 'pill ' + pillClass(dtype);
+
+  const pr = PROFILES[profile];
+  const P  = calcP(cpu,ram);
+  const A  = calcA(cpu,ram,batMode);
+  const C  = calcC(cpu,ram,disk);
+  const S  = calcSat(cpu,ram,disk,batMode,pr.wP,pr.wA,pr.wC);
+
+  document.getElementById('bar-p').style.width = Math.min(P/3*100,100).toFixed(0)+'%';
+  document.getElementById('bar-a').style.width = Math.min(A/3*100,100).toFixed(0)+'%';
+  document.getElementById('bar-c').style.width = Math.min(C/5000*100,100).toFixed(0)+'%';
+  document.getElementById('bar-s').style.width = (S*100).toFixed(0)+'%';
+  document.getElementById('num-p').textContent = P.toFixed(2);
+  document.getElementById('num-a').textContent = A.toFixed(2);
+  document.getElementById('num-c').textContent = Math.round(C).toLocaleString()+'€';
+  document.getElementById('num-s').textContent = (S*100).toFixed(0)+'%';
+
+  const alert = document.getElementById('alert-box');
+  if(cpu >= 4.5 && ram >= 64){
+    alert.className = 'alert-box alert-bad';
+    alert.textContent = '⚠ Seuil de saturation dépassé — +5% de puissance = +30% de prix et −50% d\'autonomie.';
+  } else if(S > 0.52){
+    alert.className = 'alert-box alert-ok';
+    alert.textContent = '✓ Zone optimale — la PNL confirme ce point comme meilleur compromis pour votre profil.';
+  } else {
+    alert.className = 'alert-box alert-warn';
+    alert.textContent = '↗ Configuration sous-optimale — ajustez les paramètres pour atteindre le front de Pareto.';
+  }
+
+  updatePareto(cpu, ram, disk, C, S, pr);
+  updateMinis(cpu, ram, disk);
+}
+
+function updatePareto(userCpu, userRam, userDisk, userC, userS, pr){
+  const mktPts = DEVICES.map(d=>({
+    x: d.prix,
+    y: parseFloat(calcSat(d.cpu,d.ram,d.disk,batMode,pr.wP,pr.wA,pr.wC).toFixed(3)),
+    label: d.name
+  }));
+
+  const minPr  = pr.min;
+  const recoPr = pr.reco;
+  const minSat  = calcSat(minPr.cpu,minPr.ram,minPr.disk,batMode,pr.wP,pr.wA,pr.wC);
+  const recoSat = calcSat(recoPr.cpu,recoPr.ram,recoPr.disk,batMode,pr.wP,pr.wA,pr.wC);
+  const minC    = calcC(minPr.cpu,minPr.ram,minPr.disk);
+  const recoC   = calcC(recoPr.cpu,recoPr.ram,recoPr.disk);
+
+  const sorted = [...mktPts].sort((a,b)=>a.x-b.x);
+
+  const ds = [
+    {
+      label:'Appareils du marché',
+      data: mktPts,
+      type:'scatter',
+      borderColor:'#9ca3af',
+      backgroundColor:'#d1d5db',
+      pointRadius:5,
+      showLine:false,
+      order:3
+    },
+    {
+      label:'Tendance Pareto',
+      data: sorted,
+      type:'line',
+      borderColor:'#d1d5db',
+      borderDash:[4,4],
+      pointRadius:0,
+      tension:0.5,
+      fill:false,
+      order:4
+    },
+    {
+      label:'Config minimale',
+      data:[{x:Math.round(minC), y:parseFloat(minSat.toFixed(3)), label:'Config minimale'}],
+      borderColor:'#166534',
+      backgroundColor:'#166534',
+      pointRadius:9,
+      pointStyle:'triangle',
+      showLine:false,
+      order:1
+    },
+    {
+      label:'Config recommandée',
+      data:[{x:Math.round(recoC), y:parseFloat(recoSat.toFixed(3)), label:'Config recommandée'}],
+      borderColor:'#1d4ed8',
+      backgroundColor:'#1d4ed8',
+      pointRadius:10,
+      pointStyle:'star',
+      showLine:false,
+      order:1
+    },
+    {
+      label:'Votre configuration',
+      data:[{x:Math.round(userC), y:parseFloat(userS.toFixed(3)), label:'Votre config'}],
+      borderColor:'#b45309',
+      backgroundColor:'#b45309',
+      pointRadius:10,
+      pointStyle:'rectRot',
+      showLine:false,
+      order:0
+    },
+  ];
+
+  const gridC = 'rgba(0,0,0,0.06)';
+  const tickC = '#9ca3af';
+
+  if(chartPareto){
+    chartPareto.data.datasets = ds;
+    chartPareto.update('none');
+    return;
+  }
+  chartPareto = new Chart(document.getElementById('cPareto'),{
+    type:'scatter',
+    data:{datasets:ds},
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{callbacks:{
+          label:ctx=>ctx.raw.label
+            ? ctx.raw.label+' — '+Math.round(ctx.raw.x).toLocaleString()+'€ · sat: '+(ctx.raw.y*100).toFixed(0)+'%'
+            : Math.round(ctx.raw.x).toLocaleString()+'€ · sat: '+(ctx.raw.y*100).toFixed(0)+'%'
+        }}
+      },
+      scales:{
+        x:{title:{display:true,text:'Coût estimé (€)',color:tickC,font:{size:11}},ticks:{color:tickC,font:{size:10}},grid:{color:gridC},min:200,max:5500},
+        y:{title:{display:true,text:'Satisfaction globale',color:tickC,font:{size:11}},ticks:{color:tickC,font:{size:10},callback:v=>(v*100).toFixed(0)+'%'},grid:{color:gridC},min:0,max:1}
+      }
+    }
+  });
+}
+
+function miniLine(id, labels, data, color, existing){
+  const opts={
+    responsive:true, maintainAspectRatio:false,
+    plugins:{legend:{display:false}},
+    scales:{
+      x:{ticks:{color:'#9ca3af',font:{size:9},maxTicksLimit:4},grid:{color:'rgba(0,0,0,0.05)'}},
+      y:{ticks:{color:'#9ca3af',font:{size:9},maxTicksLimit:3},grid:{color:'rgba(0,0,0,0.05)'}}
+    }
+  };
+  if(existing){ existing.data.labels=labels; existing.data.datasets[0].data=data; existing.update('none'); return existing; }
+  return new Chart(document.getElementById(id),{
+    type:'line',
+    data:{labels,datasets:[{data,borderColor:color,backgroundColor:color+'18',fill:true,tension:0.4,pointRadius:0,borderWidth:2}]},
+    options:opts
+  });
+}
+
+function updateMinis(cpu, ram, disk){
+  const ramVals=[4,8,16,32,48,64,96,128];
+  chartExp = miniLine('cExp', ramVals.map(r=>r+'Go'), ramVals.map(r=>parseFloat((Math.exp(r/20)*200).toFixed(0))), '#b45309', chartExp);
+
+  const cpuVals=[1,1.5,2,2.5,3,3.5,4,4.5,5];
+  chartMul = miniLine('cMul', cpuVals.map(c=>c+'GHz'), cpuVals.map(c=>parseFloat((1/(c*(ram/8))*12).toFixed(3))), '#0f766e', chartMul);
+
+  const combVals=[2,4,6,8,10,12,14,16,18,20];
+  chartLog = miniLine('cLog', combVals.map(v=>v+''), combVals.map(v=>parseFloat(Math.log(v).toFixed(3))), '#1d4ed8', chartLog);
+}
+
+// Init
+renderConfigs('bureautique');
+setProfile('bureautique', document.getElementById('pb-bur'));
+</script>
+</body>
+</html>
